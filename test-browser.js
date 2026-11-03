@@ -84,7 +84,8 @@ assert.equal(els.get('input-pph').value, '30.000');
 // Test tombol cetak invoice
 els.get('btn-print').fire('click');
 assert.equal(printCalled, true);
-assert.equal(els.get('inv-sum-vendor').textContent, 'Rp 1.970.000');
+assert.equal(els.get('inv-sum-total').textContent, 'Rp 2.220.000');
+assert.equal(els.get('inv-sum-vendor'), undefined); // row vendor sudah ditiadakan di invoice
 
 console.log('BROWSER-LIKE LOAD OK');
 

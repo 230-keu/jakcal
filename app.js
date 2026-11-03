@@ -323,9 +323,9 @@ function updatePrintView(result) {
   const wapuNoticeEl = document.getElementById('inv-wapu-notice');
   if (wapuNoticeEl) {
     if (state.ppnDipungut) {
-      wapuNoticeEl.textContent = 'Transaksi dengan Bendahara Pemerintah: PPN disetor langsung oleh Bendahara ke Kas Negara. Vendor hanya menerima pembayaran netto (DPP dikurangi PPh).';
+      wapuNoticeEl.textContent = 'Catatan: Pembeli bertindak sebagai Pemungut PPN (WAPU/Bendahara Pemerintah). PPN akan disetor langsung oleh Pembeli ke Kas Negara.';
     } else {
-      wapuNoticeEl.textContent = 'PPN dipungut oleh vendor untuk disetor ke Kas Negara. Potongan PPh disetor oleh pihak pembeli/pemotong.';
+      wapuNoticeEl.textContent = 'Pembayaran dapat ditransfer ke rekening resmi yang tertera pada kontrak / invoice.';
     }
   }
 
@@ -335,7 +335,6 @@ function updatePrintView(result) {
   };
 
   const ppnLabel = `(${formatPercentLabel(state.ppnRate)})`;
-  const pphLabel = `(${formatPercentLabel(state.pphRate)})`;
 
   setTxt('inv-cell-dpp', formatRupiah(result.dpp));
   setTxt('inv-sum-dpp', formatRupiah(result.dpp));
@@ -343,16 +342,9 @@ function updatePrintView(result) {
   setTxt('inv-sum-ppn-rate', ppnLabel);
   setTxt('inv-sum-ppn', formatRupiah(result.ppn));
   setTxt('inv-sum-total', formatRupiah(result.total));
-  setTxt('inv-sum-ppn-wapu', `- ${formatRupiah(result.ppn)}`);
-  setTxt('inv-sum-pph-rate', pphLabel);
-  setTxt('inv-sum-pph', `- ${formatRupiah(result.pph)}`);
-  setTxt('inv-sum-vendor', formatRupiah(result.vendor));
 
   const rowDppnl = document.getElementById('inv-row-dppnl');
   if (rowDppnl) rowDppnl.hidden = !state.useDppNilaiLain;
-
-  const rowPpnWapu = document.getElementById('inv-row-ppn-wapu');
-  if (rowPpnWapu) rowPpnWapu.hidden = !state.ppnDipungut;
 }
 
 dom.btnPrint.addEventListener('click', () => {
