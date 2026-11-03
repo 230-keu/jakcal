@@ -1,3 +1,4 @@
+(function () {
 const taxApi = (typeof globalThis !== 'undefined' && globalThis.TaxCalculator)
   ? globalThis.TaxCalculator
   : (typeof require !== 'undefined' ? require('./calculator.js') : {});
@@ -314,3 +315,5 @@ dom.themeToggle.addEventListener('click', () => {
 });
 
 render();
+
+})();
