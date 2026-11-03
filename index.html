@@ -75,6 +75,11 @@
                 <input type="checkbox" id="check-dpp-nl" class="checkbox-input" disabled>
                 <span class="checkbox-text">Pakai DPP Nilai Lain (11/12), khusus PPN 12%</span>
               </label>
+
+              <label class="checkbox-label" for="check-ppn-dipungut">
+                <input type="checkbox" id="check-ppn-dipungut" class="checkbox-input">
+                <span class="checkbox-text">PPN dipungut Bendahara Pemerintah (WAPU)</span>
+              </label>
             </div>
           </div>
 
@@ -236,6 +241,31 @@
                   spellcheck="false"
                   value="1.110.000"
                   aria-label="Total tagihan (harga ditambah PPN) dalam Rupiah"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 5b: PPN dipungut bendahara (tampil bila opsi WAPU aktif) -->
+          <div class="ledger-row row-deduction" data-row="ppnwapu" id="row-ppn-wapu" hidden>
+            <div class="ledger-cell-label">
+              <label for="input-ppn-wapu" class="row-title">
+                PPN dipungut bendahara <span id="label-ppn-wapu-rate" class="rate-pill">(11%)</span>
+              </label>
+            </div>
+            <div class="ledger-cell-value">
+              <div class="inline-currency-field deduction-field">
+                <span class="row-prefix deduction-prefix" id="prefix-ppn-wapu" aria-hidden="true">- Rp</span>
+                <input
+                  type="text"
+                  id="input-ppn-wapu"
+                  data-source="ppn"
+                  class="row-input deduction-input"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  value="110.000"
+                  aria-label="Nilai PPN dipungut bendahara dalam Rupiah"
                 >
               </div>
             </div>

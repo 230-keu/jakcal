@@ -29,6 +29,7 @@ const dom = {
   selectPpn: document.getElementById('select-ppn'),
   checkIncludePpn: document.getElementById('check-include-ppn'),
   checkDppNl: document.getElementById('check-dpp-nl'),
+  checkPpnDipungut: document.getElementById('check-ppn-dipungut'),
   selectPph: document.getElementById('select-pph'),
   customPphContainer: document.getElementById('custom-pph-container'),
   inputCustomPph: document.getElementById('input-custom-pph'),
@@ -38,8 +39,12 @@ const dom = {
   btnCopy: document.getElementById('btn-copy'),
   copyLabel: document.getElementById('copy-label'),
   labelPpnRate: document.getElementById('label-ppn-rate'),
+  labelPpnWapuRate: document.getElementById('label-ppn-wapu-rate'),
   labelPphRate: document.getElementById('label-pph-rate'),
+  prefixPpnWapu: document.getElementById('prefix-ppn-wapu'),
   prefixPph: document.getElementById('prefix-pph'),
+  rowPpnWapu: document.getElementById('row-ppn-wapu'),
+  inputPpnWapu: document.getElementById('input-ppn-wapu'),
   rows: {
     dpp: document.getElementById('row-dpp'),
     dppnl: document.getElementById('row-dppnl'),
@@ -74,6 +79,7 @@ const state = {
   pphRate: 0.02,
   includePpn: false,
   useDppNilaiLain: false,
+  ppnDipungut: false,
   lastResult: null
 };
 
@@ -138,7 +144,7 @@ function updateActiveBadges() {
     : 'Nominal berisi Harga sebelum pajak (DPP)';
 }
 
-function render(activeInputKey = null, autoNotice = '') {
+function render(activeInputEl = null, autoNotice = '') {
   state.ppnRate = Number.parseFloat(dom.selectPpn.value) || 0;
   state.pphRate = getEffectivePphRate();
   state.includePpn = dom.checkIncludePpn.checked;
@@ -153,7 +159,15 @@ function render(activeInputKey = null, autoNotice = '') {
     state.value = state.lastResult ? state.lastResult.dpp : 0;
   }
 
-  dom.labelPpnRate.textContent = `(${formatPercentLabel(state.ppnRate)})`;
+  const hasPpn = state.ppnRate > 0;
+  dom.checkPpnDipungut.disabled = !hasPpn;
+  if (!hasPpn) dom.checkPpnDipungut.checked = false;
+  state.ppnDipungut = dom.checkPpnDipungut.checked;
+  dom.rowPpnWapu.hidden = !state.ppnDipungut;
+
+  const ppnPctLabel = `(${formatPercentLabel(state.ppnRate)})`;
+  dom.labelPpnRate.textContent = ppnPctLabel;
+  dom.labelPpnWapuRate.textContent = ppnPctLabel;
   dom.labelPphRate.textContent = `(${formatPercentLabel(state.pphRate)})`;
 
   const result = calculateTax({
@@ -162,7 +176,8 @@ function render(activeInputKey = null, autoNotice = '') {
     ppnRate: state.ppnRate,
     pphRate: state.pphRate,
     includePpn: state.includePpn,
-    useDppNilaiLain: state.useDppNilaiLain
+    useDppNilaiLain: state.useDppNilaiLain,
+    ppnDipungut: state.ppnDipungut
   });
 
   state.lastResult = result;
@@ -177,15 +192,22 @@ function render(activeInputKey = null, autoNotice = '') {
   dom.errorBanner.hidden = true;
   dom.errorText.textContent = '';
 
+  dom.prefixPpnWapu.textContent = result.ppn > 0 ? '- Rp' : 'Rp';
   dom.prefixPph.textContent = result.pph > 0 ? '- Rp' : 'Rp';
 
   for (const key of ['nominal', 'dpp', 'dppnl', 'ppn', 'total', 'pph', 'vendor']) {
     const inputEl = dom.inputs[key];
-    if (key === activeInputKey) {
+    if (inputEl === activeInputEl) {
       setFormattedValuePreservingCursor(inputEl, state.value);
     } else {
       inputEl.value = formatNumberId(result[key]);
     }
+  }
+
+  if (dom.inputPpnWapu === activeInputEl) {
+    setFormattedValuePreservingCursor(dom.inputPpnWapu, state.value);
+  } else {
+    dom.inputPpnWapu.value = formatNumberId(result.ppn);
   }
 
   updateActiveBadges();
@@ -219,7 +241,7 @@ function handleAmountInput(sourceKey, event) {
 
   state.source = sourceKey;
   state.value = parsed;
-  render(sourceKey, autoNotice);
+  render(inputEl, autoNotice);
 }
 
 for (const [key, inputEl] of Object.entries(dom.inputs)) {
@@ -231,6 +253,8 @@ for (const [key, inputEl] of Object.entries(dom.inputs)) {
     }
   });
 }
+
+dom.inputPpnWapu.addEventListener('input', (e) => handleAmountInput('ppn', e));
 
 dom.selectPpn.addEventListener('change', () => {
   if (state.source === 'ppn' && Number.parseFloat(dom.selectPpn.value) === 0 && state.lastResult) {
@@ -247,6 +271,7 @@ dom.checkIncludePpn.addEventListener('change', () => {
 });
 
 dom.checkDppNl.addEventListener('change', () => render());
+dom.checkPpnDipungut.addEventListener('change', () => render());
 
 dom.selectPph.addEventListener('change', () => {
   const isCustom = dom.selectPph.value === 'custom';
@@ -282,6 +307,7 @@ dom.btnCopy.addEventListener('click', async () => {
     ...(state.useDppNilaiLain ? [`Dasar hitung PPN (DPP Nilai Lain): ${formatRupiah(r.dppnl)}`] : []),
     `PPN (${ppnLabel}): ${formatRupiah(r.ppn)}`,
     `Total tagihan (harga + PPN): ${formatRupiah(r.total)}`,
+    ...(state.ppnDipungut ? [`PPN dipungut bendahara (${ppnLabel}): ${formatRupiah(r.ppn, true)}`] : []),
     `PPh dipotong (${pphLabel}): ${formatRupiah(r.pph, true)}`,
     `Diterima vendor: ${formatRupiah(r.vendor)}`
   ].join('\n');
@@ -335,5 +361,4 @@ dom.themeToggle.addEventListener('click', () => {
 });
 
 render();
-
 })();

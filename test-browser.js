@@ -65,5 +65,20 @@ els.get('select-pph').value = '0.015'; els.get('select-pph').fire('change');
 dpp.value = '1.000.000'; dpp.fire('input');
 assert.equal(els.get('input-pph').value, '15.000');
 assert.equal(els.get('input-vendor').value, '1.095.000');
+
+// PPN dipungut Bendahara Pemerintah (WAPU): Diterima vendor = DPP - PPh
+const wapu = els.get('check-ppn-dipungut');
+assert.equal(els.get('row-ppn-wapu').hidden, true);
+wapu.checked = true; wapu.fire('change');
+assert.equal(els.get('row-ppn-wapu').hidden, false);
+assert.equal(els.get('input-ppn-wapu').value, '110.000');
+assert.equal(els.get('input-vendor').value, '985.000');
+
+// Reverse calculation dari Diterima vendor saat WAPU aktif (985.000 -> DPP 1.000.000)
+v.value = '1.970.000'; v.fire('input');
+assert.equal(els.get('input-dpp').value, '2.000.000');
+assert.equal(els.get('input-ppn').value, '220.000');
+assert.equal(els.get('input-total').value, '2.220.000');
+assert.equal(els.get('input-pph').value, '30.000');
 console.log('BROWSER-LIKE LOAD OK');
 
