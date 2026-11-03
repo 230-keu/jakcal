@@ -131,13 +131,24 @@
             <span id="status-text">Semua baris rincian di bawah dapat diklik dan diubah langsung untuk hitung mundur otomatis.</span>
           </div>
 
-          <button type="button" id="btn-copy" class="btn-copy">
-            <svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            <span id="copy-label">SALIN</span>
-          </button>
+          <div class="toolbar-actions">
+            <button type="button" id="btn-print" class="btn-action btn-print" title="Cetak atau simpan invoice sebagai PDF">
+              <svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              <span>CETAK INVOICE</span>
+            </button>
+
+            <button type="button" id="btn-copy" class="btn-action btn-copy">
+              <svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span id="copy-label">SALIN</span>
+            </button>
+          </div>
         </div>
 
         <!-- Alert State (Error / Validation) -->
@@ -326,6 +337,115 @@
         </div>
       </section>
     </main>
+
+    <!-- Invoice Print Template (Visible on Print) -->
+    <section id="invoice-print-area" class="invoice-print-container" aria-label="Contoh Dokumen Invoice">
+      <div class="inv-header">
+        <div class="inv-brand">
+          <h2 class="inv-title">FAKTUR / INVOICE</h2>
+          <p class="inv-subtitle">Contoh Dokumen Penagihan Resmi</p>
+        </div>
+        <div class="inv-meta">
+          <table>
+            <tr>
+              <td>No. Invoice</td>
+              <td>: <span id="inv-no">INV/2026/001</span></td>
+            </tr>
+            <tr>
+              <td>Tanggal</td>
+              <td>: <span id="inv-date">-</span></td>
+            </tr>
+            <tr>
+              <td>Status PPN</td>
+              <td>: <span id="inv-ppn-status">Standar</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="inv-parties">
+        <div class="inv-party">
+          <span class="party-label">Diterbitkan Oleh (Vendor):</span>
+          <p class="party-name">PT Mitra Penyedia Jasa / Barang</p>
+          <p class="party-desc">NPWP: 01.234.567.8-012.000<br>Jl. Pembangunan No. 123, Jakarta</p>
+        </div>
+        <div class="inv-party">
+          <span class="party-label">Ditagihkan Kepada:</span>
+          <p class="party-name">Bendahara Pengeluaran / Pembeli</p>
+          <p class="party-desc">Instansi / Badan Usaha Penerima Jasa<br>NPWP/NIK: Sesuai Kontrak</p>
+        </div>
+      </div>
+
+      <table class="inv-table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Uraian / Deskripsi Pengadaan</th>
+            <th class="text-right">Jumlah (Rp)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>
+              Pengadaan Barang / Jasa (Sesuai SPK / Kontrak Kerja)
+              <div id="inv-desc-notes" class="inv-desc-notes"></div>
+            </td>
+            <td class="text-right" id="inv-cell-dpp">Rp 0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="inv-calc-breakdown">
+        <div class="inv-notes">
+          <span class="notes-title">Catatan Pembayaran &amp; Potongan:</span>
+          <p id="inv-wapu-notice">PPh dan PPN dipotong/dipungut sesuai peraturan perpajakan yang berlaku.</p>
+        </div>
+        <table class="inv-summary-table">
+          <tr>
+            <td>Harga sebelum pajak (DPP)</td>
+            <td class="text-right" id="inv-sum-dpp">Rp 0</td>
+          </tr>
+          <tr id="inv-row-dppnl" hidden>
+            <td>Dasar hitung PPN (DPP Nilai Lain 11/12)</td>
+            <td class="text-right" id="inv-sum-dppnl">Rp 0</td>
+          </tr>
+          <tr>
+            <td>PPN <span id="inv-sum-ppn-rate">(11%)</span></td>
+            <td class="text-right" id="inv-sum-ppn">Rp 0</td>
+          </tr>
+          <tr class="inv-highlight-row">
+            <td><strong>Total Tagihan (Harga + PPN)</strong></td>
+            <td class="text-right"><strong id="inv-sum-total">Rp 0</strong></td>
+          </tr>
+          <tr id="inv-row-ppn-wapu" class="inv-deduct-row" hidden>
+            <td>PPN dipungut bendahara pemerintah</td>
+            <td class="text-right" id="inv-sum-ppn-wapu">- Rp 0</td>
+          </tr>
+          <tr class="inv-deduct-row">
+            <td>Potongan PPh <span id="inv-sum-pph-rate">(2%)</span></td>
+            <td class="text-right" id="inv-sum-pph">- Rp 0</td>
+          </tr>
+          <tr class="inv-net-row">
+            <td><strong>Sisa Diterima Vendor (Net Transfer)</strong></td>
+            <td class="text-right"><strong id="inv-sum-vendor">Rp 0</strong></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="inv-signatures">
+        <div class="sig-box">
+          <p>Disetujui Oleh (Pembeli),</p>
+          <div class="sig-space"></div>
+          <p class="sig-name">( Pejabat Pembuat Komitmen / Pembeli )</p>
+        </div>
+        <div class="sig-box">
+          <p>Dibuat Oleh (Vendor),</p>
+          <div class="sig-space"></div>
+          <p class="sig-name">( Pimpinan / Bagian Keuangan )</p>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script src="./calculator.js"></script>

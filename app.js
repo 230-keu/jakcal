@@ -36,6 +36,7 @@ const dom = {
   statusText: document.getElementById('status-text'),
   errorBanner: document.getElementById('error-banner'),
   errorText: document.getElementById('error-text'),
+  btnPrint: document.getElementById('btn-print'),
   btnCopy: document.getElementById('btn-copy'),
   copyLabel: document.getElementById('copy-label'),
   labelPpnRate: document.getElementById('label-ppn-rate'),
@@ -294,6 +295,71 @@ dom.btnReset.addEventListener('click', () => {
   state.value = 0;
   render();
   dom.inputNominal.focus();
+});
+
+function updatePrintView(result) {
+  const dateStr = new Intl.DateTimeFormat('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(new Date());
+
+  const invDateEl = document.getElementById('inv-date');
+  if (invDateEl) invDateEl.textContent = dateStr;
+
+  const ppnStatusEl = document.getElementById('inv-ppn-status');
+  if (ppnStatusEl) {
+    if (state.ppnRate === 0) {
+      ppnStatusEl.textContent = 'Non-PKP / Tanpa PPN';
+    } else if (state.ppnDipungut) {
+      ppnStatusEl.textContent = 'Dipungut Bendahara Pemerintah (WAPU)';
+    } else if (state.useDppNilaiLain) {
+      ppnStatusEl.textContent = 'PPN 12% (DPP Nilai Lain 11/12)';
+    } else {
+      ppnStatusEl.textContent = `Standar (${formatPercentLabel(state.ppnRate)})`;
+    }
+  }
+
+  const wapuNoticeEl = document.getElementById('inv-wapu-notice');
+  if (wapuNoticeEl) {
+    if (state.ppnDipungut) {
+      wapuNoticeEl.textContent = 'Transaksi dengan Bendahara Pemerintah: PPN disetor langsung oleh Bendahara ke Kas Negara. Vendor hanya menerima pembayaran netto (DPP dikurangi PPh).';
+    } else {
+      wapuNoticeEl.textContent = 'PPN dipungut oleh vendor untuk disetor ke Kas Negara. Potongan PPh disetor oleh pihak pembeli/pemotong.';
+    }
+  }
+
+  const setTxt = (id, txt) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  };
+
+  const ppnLabel = `(${formatPercentLabel(state.ppnRate)})`;
+  const pphLabel = `(${formatPercentLabel(state.pphRate)})`;
+
+  setTxt('inv-cell-dpp', formatRupiah(result.dpp));
+  setTxt('inv-sum-dpp', formatRupiah(result.dpp));
+  setTxt('inv-sum-dppnl', formatRupiah(result.dppnl));
+  setTxt('inv-sum-ppn-rate', ppnLabel);
+  setTxt('inv-sum-ppn', formatRupiah(result.ppn));
+  setTxt('inv-sum-total', formatRupiah(result.total));
+  setTxt('inv-sum-ppn-wapu', `- ${formatRupiah(result.ppn)}`);
+  setTxt('inv-sum-pph-rate', pphLabel);
+  setTxt('inv-sum-pph', `- ${formatRupiah(result.pph)}`);
+  setTxt('inv-sum-vendor', formatRupiah(result.vendor));
+
+  const rowDppnl = document.getElementById('inv-row-dppnl');
+  if (rowDppnl) rowDppnl.hidden = !state.useDppNilaiLain;
+
+  const rowPpnWapu = document.getElementById('inv-row-ppn-wapu');
+  if (rowPpnWapu) rowPpnWapu.hidden = !state.ppnDipungut;
+}
+
+dom.btnPrint.addEventListener('click', () => {
+  if (state.lastResult) {
+    updatePrintView(state.lastResult);
+  }
+  window.print();
 });
 
 dom.btnCopy.addEventListener('click', async () => {

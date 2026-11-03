@@ -18,10 +18,11 @@ for (const m of html.matchAll(/id="([^"]+)"/g)) mk(m[1]);
 els.get('select-ppn').value = '0.11';
 els.get('select-pph').value = '0.02';
 const root = mk('root');
+let printCalled = false;
 const ctx = vm.createContext({
-  Intl, Math, Number, String, Object, console,
+  Intl, Math, Number, String, Object, console, Date,
   document: { documentElement: root, activeElement: null, getElementById: (i) => els.get(i) },
-  window: { innerWidth: 1024 },
+  window: { innerWidth: 1024, print: () => { printCalled = true; } },
   localStorage: { getItem: () => null, setItem() {} },
   navigator: { clipboard: { writeText: async () => {} } },
   setTimeout
@@ -80,5 +81,10 @@ assert.equal(els.get('input-dpp').value, '2.000.000');
 assert.equal(els.get('input-ppn').value, '220.000');
 assert.equal(els.get('input-total').value, '2.220.000');
 assert.equal(els.get('input-pph').value, '30.000');
+// Test tombol cetak invoice
+els.get('btn-print').fire('click');
+assert.equal(printCalled, true);
+assert.equal(els.get('inv-sum-vendor').textContent, 'Rp 1.970.000');
+
 console.log('BROWSER-LIKE LOAD OK');
 
