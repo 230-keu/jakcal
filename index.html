@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Pajak Invoice (PPN &amp; PPh)</title>
+  <meta name="description" content="Hitung PPN dan potongan PPh pada nilai invoice secara dua arah. Ubah nominal awal, DPP, PPN, total tagihan, atau nominal diterima vendor secara langsung.">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="top-bar">
+      <div class="brand-block">
+        <h1 class="app-title">Kalkulator Pajak Invoice</h1>
+        <p class="app-subtitle">Hitung PPN dan PPh (potongan) pada nilai invoice. Semua dihitung di browser Anda.</p>
+      </div>
+      <div class="top-actions">
+        <button type="button" id="theme-toggle" class="btn-secondary" aria-label="Ganti tema tampilan">
+          <svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+          </svg>
+          <span id="theme-label">Mode Gelap</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="calculator-main">
+      <!-- Primary Nominal Section -->
+      <section class="controls-section" aria-label="Parameter Utama Pajak">
+        <div class="field-group nominal-group">
+          <div class="label-row">
+            <label for="input-nominal" class="field-label">Nominal (Rp)</label>
+            <span id="nominal-mode-hint" class="field-hint">Acuan: Nilai Dasar (DPP)</span>
+          </div>
+          <div class="nominal-input-wrapper">
+            <span class="currency-prefix" aria-hidden="true">Rp</span>
+            <input
+              type="text"
+              id="input-nominal"
+              class="nominal-input"
+              inputmode="numeric"
+              autocomplete="off"
+              spellcheck="false"
+              value="1.000.000"
+              placeholder="Masukkan nominal, misal 1.000.000"
+              aria-describedby="nominal-mode-hint"
+            >
+            <button type="button" id="btn-reset" class="btn-clear" title="Reset semua nilai ke 0" aria-label="Reset semua nilai ke 0">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="tax-options-grid">
+          <!-- Tarif PPN & Checkbox -->
+          <div class="field-group ppn-group">
+            <label for="select-ppn" class="field-label">Tarif PPN</label>
+            <div class="ppn-controls-row">
+              <div class="select-wrapper ppn-select-wrap">
+                <select id="select-ppn" class="field-select">
+                  <option value="0.11" selected>11%</option>
+                  <option value="0.12">12%</option>
+                  <option value="0.011">1,1% (Besaran Tertentu)</option>
+                  <option value="0">0% (Tanpa PPN)</option>
+                </select>
+              </div>
+
+              <label class="checkbox-label" for="check-include-ppn">
+                <input type="checkbox" id="check-include-ppn" class="checkbox-input">
+                <span class="checkbox-text">Nominal sudah termasuk PPN</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Potongan PPh -->
+          <div class="field-group pph-group">
+            <label for="select-pph" class="field-label">Potongan PPh</label>
+            <div class="pph-controls-row">
+              <div class="select-wrapper pph-select-wrap">
+                <select id="select-pph" class="field-select">
+                  <option value="0.02" selected>PPh 23 - Jasa (2%)</option>
+                  <option value="0.04">PPh 23 - Jasa Tanpa NPWP (4%)</option>
+                  <option value="0.15">PPh 23 - Dividen / Bunga / Royalti (15%)</option>
+                  <option value="0.005">PPh Final 4(2) - UMKM PP 55 (0,5%)</option>
+                  <option value="0.0175">PPh Final 4(2) - Konstruksi Kecil (1,75%)</option>
+                  <option value="0.0265">PPh Final 4(2) - Konstruksi Menengah/Besar (2,65%)</option>
+                  <option value="0.035">PPh Final 4(2) - Konsultan Konstruksi (3,5%)</option>
+                  <option value="0.10">PPh Final 4(2) - Sewa Tanah/Bangunan (10%)</option>
+                  <option value="0.025">PPh 21 - Tenaga Ahli / Bukan Pegawai (2,5%)</option>
+                  <option value="0">Tanpa Potongan PPh (0%)</option>
+                  <option value="custom">Tarif PPh Kustom (%)</option>
+                </select>
+              </div>
+
+              <div id="custom-pph-container" class="custom-rate-box" hidden>
+                <label for="input-custom-pph" class="sr-only">Persentase PPh Kustom</label>
+                <input
+                  type="number"
+                  id="input-custom-pph"
+                  class="custom-rate-input"
+                  min="0"
+                  max="99"
+                  step="0.05"
+                  value="2"
+                  placeholder="Misal: 2.5"
+                >
+                <span class="percent-suffix" aria-hidden="true">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status & Action Bar -->
+      <section class="ledger-section" aria-label="Rincian Perhitungan Pajak">
+        <div class="ledger-toolbar">
+          <div id="calc-status-banner" class="status-banner" role="status" aria-live="polite">
+            <span class="status-indicator" aria-hidden="true"></span>
+            <span id="status-text">Semua baris rincian di bawah dapat diklik dan diubah langsung untuk hitung mundur otomatis.</span>
+          </div>
+
+          <button type="button" id="btn-copy" class="btn-copy">
+            <svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copy-label">SALIN</span>
+          </button>
+        </div>
+
+        <!-- Alert State (Error / Validation) -->
+        <div id="error-banner" class="error-banner" role="alert" hidden>
+          <strong>Peringatan Perhitungan:</strong>
+          <span id="error-text"></span>
+        </div>
+
+        <!-- 5-Row Directly Editable Ledger Table -->
+        <div class="ledger-table" role="region" aria-label="Tabel Rincian Pajak Dua Arah">
+          <!-- Row 1: Dasar (DPP) -->
+          <div class="ledger-row" data-row="dpp" id="row-dpp">
+            <div class="ledger-cell-label">
+              <label for="input-dpp" class="row-title">Dasar (DPP)</label>
+              <span class="active-badge" id="badge-dpp">Acuan</span>
+            </div>
+            <div class="ledger-cell-value">
+              <div class="inline-currency-field">
+                <span class="row-prefix" aria-hidden="true">Rp</span>
+                <input
+                  type="text"
+                  id="input-dpp"
+                  data-source="dpp"
+                  class="row-input"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  value="1.000.000"
+                  aria-label="Dasar Pengenaan Pajak (DPP) dalam Rupiah"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: PPN -->
+          <div class="ledger-row" data-row="ppn" id="row-ppn">
+            <div class="ledger-cell-label">
+              <label for="input-ppn" class="row-title">
+                PPN <span id="label-ppn-rate" class="rate-pill">(11%)</span>
+              </label>
+              <span class="active-badge" id="badge-ppn" hidden>Acuan</span>
+            </div>
+            <div class="ledger-cell-value">
+              <div class="inline-currency-field">
+                <span class="row-prefix" aria-hidden="true">Rp</span>
+                <input
+                  type="text"
+                  id="input-ppn"
+                  data-source="ppn"
+                  class="row-input"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  value="110.000"
+                  aria-label="Nilai PPN dalam Rupiah"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Total invoice (DPP + PPN) -->
+          <div class="ledger-row row-highlight" data-row="total" id="row-total">
+            <div class="ledger-cell-label">
+              <label for="input-total" class="row-title row-title-strong">Total invoice (DPP + PPN)</label>
+              <span class="active-badge" id="badge-total" hidden>Acuan</span>
+            </div>
+            <div class="ledger-cell-value">
+              <div class="inline-currency-field">
+                <span class="row-prefix row-prefix-strong" aria-hidden="true">Rp</span>
+                <input
+                  type="text"
+                  id="input-total"
+                  data-source="total"
+                  class="row-input row-input-strong"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  value="1.110.000"
+                  aria-label="Total invoice (DPP ditambah PPN) dalam Rupiah"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: PPh dipotong -->
+          <div class="ledger-row row-deduction" data-row="pph" id="row-pph">
+            <div class="ledger-cell-label">
+              <label for="input-pph" class="row-title">
+                PPh dipotong <span id="label-pph-rate" class="rate-pill">(2%)</span>
+              </label>
+              <span class="active-badge" id="badge-pph" hidden>Acuan</span>
+            </div>
+            <div class="ledger-cell-value">
+              <div class="inline-currency-field deduction-field">
+                <span class="row-prefix deduction-prefix" id="prefix-pph" aria-hidden="true">- Rp</span>
+                <input
+                  type="text"
+                  id="input-pph"
+                  data-source="pph"
+                  class="row-input deduction-input"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  value="20.000"
+                  aria-label="Nilai potongan PPh dalam Rupiah"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 5: Diterima vendor -->
+          <div class="ledger-row row-highlight row-vendor" data-row="vendor" id="row-vendor">
+            <div class="ledger-cell-label">
+              <div class="vendor-title-group">
+                <label for="input-vendor" class="row-title row-title-strong">Diterima vendor</label>
+                <span class="row-subhint">Ubah langsung untuk hitung mundur (Gross-Up)</span>
+              </div>
+              <span class="active-badge" id="badge-vendor" hidden>Acuan</span>
+            </div>
+            <div class="ledger-cell-value">
+              <div class="inline-currency-field">
+                <span class="row-prefix row-prefix-strong" aria-hidden="true">Rp</span>
+                <input
+                  type="text"
+                  id="input-vendor"
+                  data-source="vendor"
+                  class="row-input row-input-strong"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  value="1.090.000"
+                  aria-label="Nominal bersih yang diterima vendor dalam Rupiah"
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./calculator.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
