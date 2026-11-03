@@ -19,6 +19,8 @@ const PPH_OPTIONS = [
   { id: 'custom', label: 'Tarif PPh Kustom (%)', rate: null }
 ];
 
+const DPP_NILAI_LAIN_FACTOR = 11 / 12;
+
 const idNumberFormat = new Intl.NumberFormat('id-ID', {
   maximumFractionDigits: 0
 });
@@ -46,28 +48,39 @@ function parseRupiahInput(rawString) {
   return Number.isFinite(parsed) ? Math.min(parsed, 999_999_999_999_999) : 0;
 }
 
+/*
+ * Dengan DPP Nilai Lain, PPN = tarif x (11/12 x DPP). PPh tetap dihitung dari DPP
+ * (harga jual sebenarnya). Tanpa opsi itu, faktor = 1 dan dppNilaiLain sama dengan DPP.
+ */
 function calculateTax({
   source = 'nominal',
   value = 0,
   ppnRate = 0.11,
   pphRate = 0.02,
-  includePpn = false
+  includePpn = false,
+  useDppNilaiLain = false
 }) {
   const cleanValue = Math.max(0, Math.round(Number(value) || 0));
   const rPpn = Math.max(0, Number(ppnRate) || 0);
   const rPph = Math.max(0, Number(pphRate) || 0);
+  const factor = useDppNilaiLain ? DPP_NILAI_LAIN_FACTOR : 1;
+  const effRate = rPpn * factor;
 
-  if (rPph >= 1 + rPpn) {
+  if (rPph >= 1 + effRate) {
     return {
       error: 'Tarif potongan PPh tidak boleh melebihi total tagihan (100% + PPN).',
       nominal: 0,
       dpp: 0,
+      dppnl: 0,
       ppn: 0,
       total: 0,
       pph: 0,
       vendor: 0
     };
   }
+
+  const dppNlOf = (dpp) => Math.round(dpp * factor);
+  const ppnOf = (dpp) => Math.round(dppNlOf(dpp) * rPpn);
 
   const effectiveSource =
     source === 'nominal' ? (includePpn ? 'total' : 'dpp') : source;
@@ -80,31 +93,37 @@ function calculateTax({
 
   if (effectiveSource === 'dpp') {
     dpp = cleanValue;
-    ppn = Math.round(dpp * rPpn);
+    ppn = ppnOf(dpp);
+    total = dpp + ppn;
+    pph = Math.round(dpp * rPph);
+    vendor = total - pph;
+  } else if (effectiveSource === 'dppnl') {
+    dpp = Math.round(cleanValue / factor);
+    ppn = ppnOf(dpp);
     total = dpp + ppn;
     pph = Math.round(dpp * rPph);
     vendor = total - pph;
   } else if (effectiveSource === 'total') {
     total = cleanValue;
-    dpp = rPpn > 0 ? Math.round(total / (1 + rPpn)) : total;
+    dpp = effRate > 0 ? Math.round(total / (1 + effRate)) : total;
     ppn = total - dpp;
     pph = Math.round(dpp * rPph);
     vendor = total - pph;
   } else if (effectiveSource === 'ppn') {
     ppn = cleanValue;
-    dpp = rPpn > 0 ? Math.round(ppn / rPpn) : 0;
+    dpp = effRate > 0 ? Math.round(ppn / effRate) : 0;
     total = dpp + ppn;
     pph = Math.round(dpp * rPph);
     vendor = total - pph;
   } else if (effectiveSource === 'pph') {
     pph = cleanValue;
     dpp = rPph > 0 ? Math.round(pph / rPph) : 0;
-    ppn = Math.round(dpp * rPpn);
+    ppn = ppnOf(dpp);
     total = dpp + ppn;
     vendor = total - pph;
   } else if (effectiveSource === 'vendor') {
     vendor = cleanValue;
-    const netFactor = 1 + rPpn - rPph;
+    const netFactor = 1 + effRate - rPph;
     const approxDpp = Math.round(vendor / netFactor);
 
     let matched = false;
@@ -112,7 +131,7 @@ function calculateTax({
       const candidates = offset === 0 ? [approxDpp] : [approxDpp - offset, approxDpp + offset];
       for (const cand of candidates) {
         if (cand < 0) continue;
-        const candPpn = Math.round(cand * rPpn);
+        const candPpn = ppnOf(cand);
         const candPph = Math.round(cand * rPph);
         if (cand + candPpn - candPph === vendor) {
           dpp = cand;
@@ -129,7 +148,7 @@ function calculateTax({
     if (!matched) {
       dpp = Math.max(0, approxDpp);
       if (rPph > 0) {
-        ppn = Math.round(dpp * rPpn);
+        ppn = ppnOf(dpp);
         total = dpp + ppn;
         pph = Math.max(0, total - vendor);
       } else {
@@ -146,6 +165,7 @@ function calculateTax({
     error: null,
     nominal,
     dpp,
+    dppnl: dppNlOf(dpp),
     ppn,
     total,
     pph,

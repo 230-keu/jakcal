@@ -65,6 +65,22 @@ const fromPph = calculateTax({ source: 'pph', value: 20_000, ppnRate: 0.11, pphR
 assert.equal(fromPph.dpp, 1_000_000);
 assert.equal(fromPph.vendor, 1_090_000);
 
+// 5b. DPP Nilai Lain (11/12) dengan PPN 12%: PPN efektif 11% dari DPP
+const nl = calculateTax({ source: 'dpp', value: 1_000_000, ppnRate: 0.12, pphRate: 0.02, useDppNilaiLain: true });
+assert.equal(nl.dppnl, 916_667);
+assert.equal(nl.ppn, 110_000);
+assert.equal(nl.total, 1_110_000);
+assert.equal(nl.pph, 20_000);
+assert.equal(nl.vendor, 1_090_000);
+for (const [source, value] of [['total', 1_110_000], ['dppnl', 916_667], ['ppn', 110_000], ['vendor', 1_090_000], ['pph', 20_000]]) {
+  const r = calculateTax({ source, value, ppnRate: 0.12, pphRate: 0.02, useDppNilaiLain: true });
+  assert.equal(r.dpp, 1_000_000, `reverse dari ${source}`);
+  assert.equal(r.total, 1_110_000, `reverse dari ${source}`);
+}
+const noNl = calculateTax({ source: 'dpp', value: 1_000_000, ppnRate: 0.12, pphRate: 0.02 });
+assert.equal(noNl.ppn, 120_000);
+assert.equal(noNl.dppnl, noNl.dpp);
+
 // 6. Error state check: PPh rate >= 100% + PPN
 const errResult = calculateTax({ source: 'vendor', value: 1_000_000, ppnRate: 0.11, pphRate: 1.2 });
 assert.ok(errResult.error);

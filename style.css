@@ -664,3 +664,7 @@ select:focus-visible {
   }
 }
 
+
+.ledger-row[hidden] {
+  display: none;
+}

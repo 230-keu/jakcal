@@ -70,6 +70,11 @@
                 <input type="checkbox" id="check-include-ppn" class="checkbox-input">
                 <span class="checkbox-text">Nominal sudah termasuk PPN</span>
               </label>
+
+              <label class="checkbox-label" for="check-dpp-nl">
+                <input type="checkbox" id="check-dpp-nl" class="checkbox-input" disabled>
+                <span class="checkbox-text">Pakai DPP Nilai Lain (11/12), khusus PPN 12%</span>
+              </label>
             </div>
           </div>
 
@@ -135,9 +140,33 @@
           <span id="error-text"></span>
         </div>
 
-        <!-- 5-Row Directly Editable Ledger Table -->
+        <!-- Directly Editable Ledger Table -->
         <div class="ledger-table" role="region" aria-label="Tabel Rincian Pajak Dua Arah">
-          <!-- Row 1: Dasar (DPP) -->
+          <!-- Row 1: Total tagihan (DPP + PPN) -->
+          <div class="ledger-row row-highlight" data-row="total" id="row-total">
+            <div class="ledger-cell-label">
+              <label for="input-total" class="row-title row-title-strong">Total tagihan (DPP + PPN)</label>
+              <span class="active-badge" id="badge-total" hidden>Acuan</span>
+            </div>
+            <div class="ledger-cell-value">
+              <div class="inline-currency-field">
+                <span class="row-prefix row-prefix-strong" aria-hidden="true">Rp</span>
+                <input
+                  type="text"
+                  id="input-total"
+                  data-source="total"
+                  class="row-input row-input-strong"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  value="1.110.000"
+                  aria-label="Total tagihan (DPP ditambah PPN) dalam Rupiah"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Dasar (DPP) -->
           <div class="ledger-row" data-row="dpp" id="row-dpp">
             <div class="ledger-cell-label">
               <label for="input-dpp" class="row-title">Dasar (DPP)</label>
@@ -161,7 +190,31 @@
             </div>
           </div>
 
-          <!-- Row 2: PPN -->
+          <!-- Row 3: DPP Nilai Lain (hanya tampil bila opsi 11/12 aktif) -->
+          <div class="ledger-row" data-row="dppnl" id="row-dppnl" hidden>
+            <div class="ledger-cell-label">
+              <label for="input-dppnl" class="row-title">DPP Nilai Lain <span class="rate-pill">(11/12 &times; DPP)</span></label>
+              <span class="active-badge" id="badge-dppnl" hidden>Acuan</span>
+            </div>
+            <div class="ledger-cell-value">
+              <div class="inline-currency-field">
+                <span class="row-prefix" aria-hidden="true">Rp</span>
+                <input
+                  type="text"
+                  id="input-dppnl"
+                  data-source="dppnl"
+                  class="row-input"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  spellcheck="false"
+                  value="0"
+                  aria-label="DPP Nilai Lain (11/12 dari DPP) dalam Rupiah"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: PPN -->
           <div class="ledger-row" data-row="ppn" id="row-ppn">
             <div class="ledger-cell-label">
               <label for="input-ppn" class="row-title">
@@ -182,30 +235,6 @@
                   spellcheck="false"
                   value="110.000"
                   aria-label="Nilai PPN dalam Rupiah"
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 3: Total invoice (DPP + PPN) -->
-          <div class="ledger-row row-highlight" data-row="total" id="row-total">
-            <div class="ledger-cell-label">
-              <label for="input-total" class="row-title row-title-strong">Total invoice (DPP + PPN)</label>
-              <span class="active-badge" id="badge-total" hidden>Acuan</span>
-            </div>
-            <div class="ledger-cell-value">
-              <div class="inline-currency-field">
-                <span class="row-prefix row-prefix-strong" aria-hidden="true">Rp</span>
-                <input
-                  type="text"
-                  id="input-total"
-                  data-source="total"
-                  class="row-input row-input-strong"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  spellcheck="false"
-                  value="1.110.000"
-                  aria-label="Total invoice (DPP ditambah PPN) dalam Rupiah"
                 >
               </div>
             </div>

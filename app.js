@@ -14,7 +14,8 @@ const SOURCE_LABELS = {
   nominal: 'Nominal (Rp)',
   dpp: 'Dasar (DPP)',
   ppn: 'PPN',
-  total: 'Total invoice (DPP + PPN)',
+  total: 'Total tagihan (DPP + PPN)',
+  dppnl: 'DPP Nilai Lain (11/12)',
   pph: 'PPh dipotong',
   vendor: 'Diterima vendor (Hitung Mundur)'
 };
@@ -27,6 +28,7 @@ const dom = {
   btnReset: document.getElementById('btn-reset'),
   selectPpn: document.getElementById('select-ppn'),
   checkIncludePpn: document.getElementById('check-include-ppn'),
+  checkDppNl: document.getElementById('check-dpp-nl'),
   selectPph: document.getElementById('select-pph'),
   customPphContainer: document.getElementById('custom-pph-container'),
   inputCustomPph: document.getElementById('input-custom-pph'),
@@ -40,6 +42,7 @@ const dom = {
   prefixPph: document.getElementById('prefix-pph'),
   rows: {
     dpp: document.getElementById('row-dpp'),
+    dppnl: document.getElementById('row-dppnl'),
     ppn: document.getElementById('row-ppn'),
     total: document.getElementById('row-total'),
     pph: document.getElementById('row-pph'),
@@ -47,6 +50,7 @@ const dom = {
   },
   badges: {
     dpp: document.getElementById('badge-dpp'),
+    dppnl: document.getElementById('badge-dppnl'),
     ppn: document.getElementById('badge-ppn'),
     total: document.getElementById('badge-total'),
     pph: document.getElementById('badge-pph'),
@@ -55,6 +59,7 @@ const dom = {
   inputs: {
     nominal: document.getElementById('input-nominal'),
     dpp: document.getElementById('input-dpp'),
+    dppnl: document.getElementById('input-dppnl'),
     ppn: document.getElementById('input-ppn'),
     total: document.getElementById('input-total'),
     pph: document.getElementById('input-pph'),
@@ -68,6 +73,7 @@ const state = {
   ppnRate: 0.11,
   pphRate: 0.02,
   includePpn: false,
+  useDppNilaiLain: false,
   lastResult: null
 };
 
@@ -121,14 +127,14 @@ function updateActiveBadges() {
   const effectiveRowSource =
     state.source === 'nominal' ? (state.includePpn ? 'total' : 'dpp') : state.source;
 
-  for (const key of ['dpp', 'ppn', 'total', 'pph', 'vendor']) {
+  for (const key of ['dpp', 'dppnl', 'ppn', 'total', 'pph', 'vendor']) {
     const isCurrent = key === effectiveRowSource;
     dom.rows[key].classList.toggle('is-source', isCurrent);
     dom.badges[key].hidden = !isCurrent;
   }
 
   dom.nominalModeHint.textContent = state.includePpn
-    ? 'Nominal berisi Total Invoice (DPP + PPN)'
+    ? 'Nominal berisi Total Tagihan (DPP + PPN)'
     : 'Nominal berisi Nilai Dasar (DPP)';
 }
 
@@ -136,6 +142,16 @@ function render(activeInputKey = null, autoNotice = '') {
   state.ppnRate = Number.parseFloat(dom.selectPpn.value) || 0;
   state.pphRate = getEffectivePphRate();
   state.includePpn = dom.checkIncludePpn.checked;
+
+  const is12 = Math.abs(state.ppnRate - 0.12) < 1e-9;
+  dom.checkDppNl.disabled = !is12;
+  if (!is12) dom.checkDppNl.checked = false;
+  state.useDppNilaiLain = dom.checkDppNl.checked;
+  dom.rows.dppnl.hidden = !state.useDppNilaiLain;
+  if (!state.useDppNilaiLain && state.source === 'dppnl') {
+    state.source = 'dpp';
+    state.value = state.lastResult ? state.lastResult.dpp : 0;
+  }
 
   dom.labelPpnRate.textContent = `(${formatPercentLabel(state.ppnRate)})`;
   dom.labelPphRate.textContent = `(${formatPercentLabel(state.pphRate)})`;
@@ -145,7 +161,8 @@ function render(activeInputKey = null, autoNotice = '') {
     value: state.value,
     ppnRate: state.ppnRate,
     pphRate: state.pphRate,
-    includePpn: state.includePpn
+    includePpn: state.includePpn,
+    useDppNilaiLain: state.useDppNilaiLain
   });
 
   state.lastResult = result;
@@ -162,7 +179,7 @@ function render(activeInputKey = null, autoNotice = '') {
 
   dom.prefixPph.textContent = result.pph > 0 ? '- Rp' : 'Rp';
 
-  for (const key of ['nominal', 'dpp', 'ppn', 'total', 'pph', 'vendor']) {
+  for (const key of ['nominal', 'dpp', 'dppnl', 'ppn', 'total', 'pph', 'vendor']) {
     const inputEl = dom.inputs[key];
     if (key === activeInputKey) {
       setFormattedValuePreservingCursor(inputEl, state.value);
@@ -229,6 +246,8 @@ dom.checkIncludePpn.addEventListener('change', () => {
   render();
 });
 
+dom.checkDppNl.addEventListener('change', () => render());
+
 dom.selectPph.addEventListener('change', () => {
   const isCustom = dom.selectPph.value === 'custom';
   dom.customPphContainer.hidden = !isCustom;
@@ -259,9 +278,10 @@ dom.btnCopy.addEventListener('click', async () => {
   const pphLabel = formatPercentLabel(state.pphRate);
 
   const summaryLines = [
+    `Total tagihan (DPP + PPN): ${formatRupiah(r.total)}`,
     `Dasar (DPP): ${formatRupiah(r.dpp)}`,
+    ...(state.useDppNilaiLain ? [`DPP Nilai Lain (11/12): ${formatRupiah(r.dppnl)}`] : []),
     `PPN (${ppnLabel}): ${formatRupiah(r.ppn)}`,
-    `Total invoice (DPP + PPN): ${formatRupiah(r.total)}`,
     `PPh dipotong (${pphLabel}): ${formatRupiah(r.pph, true)}`,
     `Diterima vendor: ${formatRupiah(r.vendor)}`
   ].join('\n');

@@ -39,4 +39,22 @@ assert.equal(els.get('input-dpp').value, '2.000.000');
 assert.equal(els.get('input-total').value, '2.220.000');
 els.get('theme-toggle').fire('click');
 assert.equal(root.getAttribute('data-theme'), 'dark');
+
+// DPP Nilai Lain: nonaktif kecuali PPN 12%, lalu baris tampil dan terhitung
+const nl = els.get('check-dpp-nl');
+assert.equal(nl.disabled, true);
+assert.equal(els.get('row-dppnl').hidden, true);
+els.get('select-ppn').value = '0.12'; els.get('select-ppn').fire('change');
+assert.equal(nl.disabled, false);
+const dpp = els.get('input-dpp');
+dpp.value = '1.000.000'; dpp.fire('input');
+nl.checked = true; nl.fire('change');
+assert.equal(els.get('row-dppnl').hidden, false);
+assert.equal(els.get('input-dppnl').value, '916.667');
+assert.equal(els.get('input-ppn').value, '110.000');
+assert.equal(els.get('input-total').value, '1.110.000');
+els.get('select-ppn').value = '0.11'; els.get('select-ppn').fire('change');
+assert.equal(nl.checked, false);
+assert.equal(els.get('row-dppnl').hidden, true);
 console.log('BROWSER-LIKE LOAD OK');
+
