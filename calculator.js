@@ -7,6 +7,7 @@ const PPN_OPTIONS = [
 
 const PPH_OPTIONS = [
   { id: 'pph23_jasa', label: 'PPh 23 - Jasa (2%)', rate: 0.02 },
+  { id: 'pph22_bendahara', label: 'PPh 22 - Pembelian Barang oleh Bendahara Pemerintah (1,5%)', rate: 0.015 },
   { id: 'pph23_non_npwp', label: 'PPh 23 - Jasa Tanpa NPWP (4%)', rate: 0.04 },
   { id: 'pph23_modal', label: 'PPh 23 - Dividen / Bunga / Royalti (15%)', rate: 0.15 },
   { id: 'pph4_umkm', label: 'PPh Final 4(2) - UMKM PP 55 (0,5%)', rate: 0.005 },

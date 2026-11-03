@@ -56,5 +56,14 @@ assert.equal(els.get('input-total').value, '1.110.000');
 els.get('select-ppn').value = '0.11'; els.get('select-ppn').fire('change');
 assert.equal(nl.checked, false);
 assert.equal(els.get('row-dppnl').hidden, true);
+// Urutan baris tabel dan opsi PPh 22 bendahara (1,5%)
+const order = ['row-dpp', 'row-dppnl', 'row-ppn', 'row-total', 'row-pph', 'row-vendor'].map((id) => html.indexOf(`id="${id}"`));
+assert.deepEqual(order, [...order].sort((a, b) => a - b), 'urutan baris salah');
+assert.ok(order.every((i) => i > 0));
+assert.ok(/<option value="0\.015">PPh 22[^<]*1,5%/.test(html));
+els.get('select-pph').value = '0.015'; els.get('select-pph').fire('change');
+dpp.value = '1.000.000'; dpp.fire('input');
+assert.equal(els.get('input-pph').value, '15.000');
+assert.equal(els.get('input-vendor').value, '1.095.000');
 console.log('BROWSER-LIKE LOAD OK');
 

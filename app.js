@@ -12,10 +12,10 @@ const {
 
 const SOURCE_LABELS = {
   nominal: 'Nominal (Rp)',
-  dpp: 'Dasar (DPP)',
+  dpp: 'Harga sebelum pajak (DPP)',
   ppn: 'PPN',
-  total: 'Total tagihan (DPP + PPN)',
-  dppnl: 'DPP Nilai Lain (11/12)',
+  total: 'Total tagihan (harga + PPN)',
+  dppnl: 'Dasar hitung PPN (DPP Nilai Lain)',
   pph: 'PPh dipotong',
   vendor: 'Diterima vendor (Hitung Mundur)'
 };
@@ -134,8 +134,8 @@ function updateActiveBadges() {
   }
 
   dom.nominalModeHint.textContent = state.includePpn
-    ? 'Nominal berisi Total Tagihan (DPP + PPN)'
-    : 'Nominal berisi Nilai Dasar (DPP)';
+    ? 'Nominal berisi Total Tagihan (harga + PPN)'
+    : 'Nominal berisi Harga sebelum pajak (DPP)';
 }
 
 function render(activeInputKey = null, autoNotice = '') {
@@ -278,10 +278,10 @@ dom.btnCopy.addEventListener('click', async () => {
   const pphLabel = formatPercentLabel(state.pphRate);
 
   const summaryLines = [
-    `Total tagihan (DPP + PPN): ${formatRupiah(r.total)}`,
-    `Dasar (DPP): ${formatRupiah(r.dpp)}`,
-    ...(state.useDppNilaiLain ? [`DPP Nilai Lain (11/12): ${formatRupiah(r.dppnl)}`] : []),
+    `Harga sebelum pajak (DPP): ${formatRupiah(r.dpp)}`,
+    ...(state.useDppNilaiLain ? [`Dasar hitung PPN (DPP Nilai Lain): ${formatRupiah(r.dppnl)}`] : []),
     `PPN (${ppnLabel}): ${formatRupiah(r.ppn)}`,
+    `Total tagihan (harga + PPN): ${formatRupiah(r.total)}`,
     `PPh dipotong (${pphLabel}): ${formatRupiah(r.pph, true)}`,
     `Diterima vendor: ${formatRupiah(r.vendor)}`
   ].join('\n');

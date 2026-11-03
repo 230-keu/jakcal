@@ -246,7 +246,7 @@ select:focus-visible {
   border-color: var(--border-strong);
 }
 
-/* Tax Options Grid (Responsive Reflow across Desktop, Tablet, Mobile) */
+/* Tax Options: PPN dan PPh ditumpuk satu kolom di semua lebar, agar select PPh tidak terjepit */
 .tax-options-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -279,7 +279,7 @@ select:focus-visible {
 
 .pph-select-wrap {
   width: 100%;
-  max-width: 340px;
+  max-width: 480px;
 }
 
 .field-select {
@@ -600,22 +600,8 @@ select:focus-visible {
 
 /* Tablet State (600px - 860px) */
 @media (min-width: 600px) and (max-width: 860px) {
-  .tax-options-grid {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
-
   .ledger-cell-value {
     width: 230px;
-  }
-}
-
-/* Desktop State (> 860px) */
-@media (min-width: 861px) {
-  .tax-options-grid {
-    grid-template-columns: auto 1fr;
-    gap: 2rem;
-    align-items: start;
   }
 }
 
