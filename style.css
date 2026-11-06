@@ -1,46 +1,103 @@
+/* ==========================================================================
+   Apple Design System: Kalkulator Pajak Invoice (PPN & PPh)
+   Based on Apple Web Design Language (SF Pro, Action Blue #0066cc, Pure Whites,
+   Parchment #f5f5f7, 1px Hairlines, Zero Clutter Shadows, Scale(0.95) Micro-interactions)
+   ========================================================================== */
+
 :root {
-  /* Core Palette: Light Mode (Warm Paper Ledger) */
-  --bg-page: #FAF7F2;
-  --bg-surface: #FFFFFF;
-  --bg-row-highlight: #F3EFE6;
-  --bg-row-active: #EBF5F3;
-  --text-primary: #18181B;
-  --text-secondary: #52525B;
-  --border-strong: #18181B;
-  --border-subtle: #71717A;
-  --accent-primary: #0F766E;
-  --accent-deduction: #B91C1C;
-  --bg-error: #FEF2F2;
-  --border-error: #B91C1C;
+  /* Apple Color Tokens - Light Surface (Default) */
+  --color-primary: #0066cc;
+  --color-primary-focus: #0071e3;
+  --color-primary-active: #0055b3;
+  --color-primary-on-dark: #2997ff;
+  
+  --color-ink: #1d1d1f;
+  --color-body: #1d1d1f;
+  --color-muted: #86868b;
+  --color-ink-muted-80: #333333;
+  --color-ink-muted-48: #7a7a7a;
+  
+  --color-divider-soft: #f0f0f0;
+  --color-hairline: #e0e0e0;
+  --color-hairline-subtle: rgba(0, 0, 0, 0.08);
+  
+  --color-canvas: #ffffff;
+  --color-canvas-parchment: #f5f5f7;
+  --color-surface-pearl: #fafafc;
+  --color-surface-chip: rgba(210, 210, 215, 0.64);
+  
+  --color-active-tint: #f0f6ff;
+  --color-active-border: #0066cc;
+  
+  --color-deduction: #d70015;
+  --color-deduction-bg: #fff2f2;
+  --color-deduction-border: #ffccd0;
+  
+  --color-error-bg: #fff2f2;
+  --color-error-border: #d70015;
+  
+  --color-on-primary: #ffffff;
+  --color-on-dark: #ffffff;
 
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 
-  /* Radii & Shadows (R-11, R-12: crisp ledger boundaries, offset shadow only on primary action) */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --shadow-offset: 3px 3px 0px var(--border-strong);
-  --shadow-offset-active: 1px 1px 0px var(--border-strong);
+  /* Apple Border Radius Scale */
+  --radius-xs: 5px;
+  --radius-sm: 8px;
+  --radius-md: 11px;
+  --radius-lg: 18px;
+  --radius-pill: 9999px;
+
+  /* Frosted Glass Filters */
+  --nav-backdrop: saturate(180%) blur(20px);
+  --nav-bg: rgba(245, 245, 247, 0.85);
+
+  /* Elevation: Strictly zero box-shadow on cards/buttons, flat hairline borders */
+  --elevation-flat: none;
+  --shadow-product: rgba(0, 0, 0, 0.15) 0 8px 24px;
 }
 
 [data-theme="dark"] {
-  /* Core Palette: Dark Mode (Carbon Ledger) */
-  --bg-page: #121316;
-  --bg-surface: #1A1C20;
-  --bg-row-highlight: #22252A;
-  --bg-row-active: #132A28;
-  --text-primary: #F4F4F5;
-  --text-secondary: #A1A1AA;
-  --border-strong: #E4E4E7;
-  --border-subtle: #71717A;
-  --accent-primary: #2DD4BF;
-  --accent-deduction: #F87171;
-  --bg-error: #2C1517;
-  --border-error: #F87171;
-  --shadow-offset: 3px 3px 0px #000000;
-  --shadow-offset-active: 1px 1px 0px #000000;
+  /* Apple Color Tokens - Dark Canvas */
+  --color-primary: #2997ff;
+  --color-primary-focus: #0071e3;
+  --color-primary-active: #147ce5;
+  --color-primary-on-dark: #2997ff;
+
+  --color-ink: #f5f5f7;
+  --color-body: #f5f5f7;
+  --color-muted: #86868b;
+  --color-ink-muted-80: #cccccc;
+  --color-ink-muted-48: #86868b;
+
+  --color-divider-soft: #272729;
+  --color-hairline: #38383a;
+  --color-hairline-subtle: rgba(255, 255, 255, 0.12);
+
+  --color-canvas: #1d1d1f;
+  --color-canvas-parchment: #000000;
+  --color-surface-pearl: #272729;
+  --color-surface-chip: rgba(255, 255, 255, 0.12);
+
+  --color-active-tint: #1c2b3d;
+  --color-active-border: #2997ff;
+
+  --color-deduction: #ff453a;
+  --color-deduction-bg: #2d1618;
+  --color-deduction-border: #5c2024;
+
+  --color-error-bg: #2d1618;
+  --color-error-border: #ff453a;
+
+  --nav-bg: rgba(0, 0, 0, 0.82);
 }
+
+/* ==========================================================================
+   Base & Reset
+   ========================================================================== */
 
 *,
 *::before,
@@ -51,16 +108,22 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-page);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  line-height: 1.5;
-  min-height: 100dvh;
+  background-color: var(--color-canvas-parchment);
+  color: var(--color-body);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.012em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .sr-only {
@@ -75,30 +138,149 @@ body {
   border: 0;
 }
 
-/* Keyboard Focus Visibility (R-32) */
+/* Apple Focus State: 2px solid primary-focus with 2px offset */
 button:focus-visible,
 input:focus-visible,
-select:focus-visible {
-  outline: 2.5px solid var(--accent-primary);
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary-focus);
   outline-offset: 2px;
 }
 
-/* Page Shell & Rhythm */
-.page-shell {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem) 4rem;
+/* ==========================================================================
+   Frosted Top Sub-Nav (Apple sub-nav-frosted)
+   ========================================================================== */
+
+.apple-subnav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--nav-bg);
+  backdrop-filter: var(--nav-backdrop);
+  -webkit-backdrop-filter: var(--nav-backdrop);
+  border-bottom: 1px solid var(--color-hairline-subtle);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
-/* Header */
+.subnav-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subnav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: var(--color-ink);
+}
+
+.calculator-logo-icon,
+.apple-logo-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--color-ink);
+}
+
+.subnav-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+.subnav-category {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-muted);
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--color-hairline);
+}
+
+.subnav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Apple Theme Pill Toggle Button */
+.btn-apple-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 32px;
+  padding: 4px 14px;
+  background-color: var(--color-surface-chip);
+  color: var(--color-ink);
+  border: 1px solid var(--color-hairline-subtle);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.15s ease, opacity 0.15s ease;
+  user-select: none;
+}
+
+.btn-apple-pill:hover {
+  opacity: 0.88;
+}
+
+.btn-apple-pill:active {
+  transform: scale(0.95);
+}
+
+/* Backward compatibility for .btn-secondary */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 34px;
+  padding: 6px 14px;
+  background-color: var(--color-surface-pearl);
+  color: var(--color-ink);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-canvas);
+}
+
+.btn-secondary:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================================================
+   Page Shell & Hero Header
+   ========================================================================== */
+
+.page-shell {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
 .top-bar {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-subtle);
+  gap: 1.5rem;
+  margin-bottom: 2.25rem;
 }
 
 .brand-block {
@@ -106,57 +288,74 @@ select:focus-visible {
 }
 
 .app-title {
-  margin: 0 0 0.25rem 0;
-  font-size: clamp(1.25rem, 2.2vw, 1.5rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.8vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em; /* Apple display tight headline tracking */
+  color: var(--color-ink);
 }
 
 .app-subtitle {
   margin: 0;
-  font-size: clamp(0.875rem, 1.5vw, 0.95rem);
-  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--color-muted);
+  max-width: 680px;
 }
 
 .top-actions {
   flex-shrink: 0;
+  padding-top: 0.25rem;
 }
 
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-height: 44px;
-  padding: 0.5rem 0.875rem;
-  background-color: var(--bg-surface);
-  color: var(--text-primary);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+/* ==========================================================================
+   Apple Store Utility Cards (Controls & Ledger)
+   ========================================================================== */
+
+.calculator-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.btn-secondary:hover {
-  background-color: var(--bg-row-highlight);
+.controls-section {
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
-/* Controls Section */
+.ledger-section {
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
 .controls-section {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
+  gap: 1.5rem;
 }
 
+/* Field Group & Label Typography */
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.6rem;
 }
 
 .label-row {
@@ -168,41 +367,49 @@ select:focus-visible {
 }
 
 .field-label {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
 }
 
 .field-hint {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--accent-primary);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-primary);
+  letter-spacing: -0.01em;
 }
 
-/* Top Nominal Input */
+/* ==========================================================================
+   Hero Amount Input (Nominal)
+   ========================================================================== */
+
 .nominal-input-wrapper {
   display: flex;
   align-items: stretch;
-  background-color: var(--bg-surface);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  min-height: 52px;
-  transition: border-color 0.15s ease;
+  background-color: var(--color-surface-pearl);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  min-height: 56px;
+  padding: 4px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .nominal-input-wrapper:focus-within {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 1px var(--accent-primary);
+  border-color: var(--color-primary-focus);
+  background-color: var(--color-canvas);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
 }
 
 .currency-prefix {
   display: inline-flex;
   align-items: center;
-  padding: 0 0.75rem 0 1rem;
-  font-family: var(--font-mono);
-  font-size: 1rem;
+  padding: 0 0.5rem 0 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-muted);
   user-select: none;
 }
 
@@ -212,125 +419,384 @@ select:focus-visible {
   min-width: 0;
   border: none;
   background: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
+  color: var(--color-ink);
+  font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
-  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
   font-weight: 600;
-  padding: 0.65rem 0.5rem 0.65rem 0;
+  letter-spacing: -0.02em;
+  padding: 0.5rem 0.5rem 0.5rem 0;
 }
 
 .nominal-input:focus-visible {
   outline: none;
 }
 
+/* Apple Reset Capsule Button */
 .btn-clear {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 64px;
+  min-width: 72px;
   min-height: 44px;
-  margin: 3px;
-  padding: 0 0.75rem;
-  background-color: var(--bg-row-highlight);
-  color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
+  margin: 2px;
+  padding: 0 1rem;
+  background-color: var(--color-surface-chip);
+  color: var(--color-ink);
+  border: 1px solid var(--color-hairline-subtle);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: -0.01em;
   cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.15s ease, background-color 0.15s ease;
 }
 
 .btn-clear:hover {
-  border-color: var(--border-strong);
+  background-color: var(--color-hairline);
 }
 
-/* Tax Options: PPN dan PPh ditumpuk satu kolom di semua lebar, agar select PPh tidak terjepit */
+.btn-clear:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================================================
+   Tax Options Grid (PPN & PPh)
+   ========================================================================== */
+
 .tax-options-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-hairline-subtle);
 }
 
-.ppn-controls-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.875rem;
-}
-
+.ppn-controls-row,
 .pph-controls-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .select-wrapper {
   position: relative;
   display: inline-flex;
   align-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .ppn-select-wrap {
-  min-width: 110px;
+  width: 100%;
+  max-width: 220px;
+  min-width: 0;
 }
 
 .pph-select-wrap {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
+  min-width: 0;
 }
 
+/* Native Apple Select Styling with Clean Disclosure Chevron */
 .field-select {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   min-height: 44px;
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
-  background-color: var(--bg-surface);
-  color: var(--text-primary);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  font-weight: 500;
+  padding: 0.55rem 2.25rem 0.55rem 1rem;
+  background-color: var(--color-surface-pearl);
+  color: var(--color-ink);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Checkbox with 44px Minimum Touch Target (R-03) */
+.field-select:hover {
+  border-color: var(--color-ink-muted-48);
+}
+
+.field-select:focus-visible {
+  border-color: var(--color-primary-focus);
+  background-color: var(--color-canvas);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+  outline: none;
+}
+
+/* Hidden native select when enhanced with custom Apple Popover */
+.native-select-hidden {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Custom Dropdown Trigger */
+.custom-select-trigger {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0.55rem 0.85rem;
+  background-color: var(--color-surface-pearl);
+  color: var(--color-ink);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  user-select: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.custom-select-trigger:hover {
+  border-color: var(--color-ink-muted-48);
+}
+
+.custom-select-trigger:focus-visible,
+.custom-select-trigger.is-open {
+  border-color: var(--color-primary-focus);
+  background-color: var(--color-canvas);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+  outline: none;
+}
+
+.custom-select-label {
+  text-align: left;
+  line-height: 1.35;
+  word-break: break-word;
+  white-space: normal;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 2px 0;
+}
+
+.custom-select-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.custom-select-trigger.is-open .custom-select-icon {
+  transform: rotate(180deg);
+}
+
+/* Custom Floating Popover Menu */
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  z-index: 50;
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: appleMenuFadeIn 0.15s ease forwards;
+}
+
+@keyframes appleMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.custom-select-menu[hidden] {
+  display: none;
+}
+
+.custom-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 8px 10px;
+  min-height: 38px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-ink);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.custom-select-option:hover {
+  background-color: var(--color-surface-pearl);
+}
+
+.custom-select-option.is-selected {
+  font-weight: 600;
+  color: var(--color-primary);
+  background-color: rgba(0, 102, 204, 0.08);
+}
+
+.option-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.option-check {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-primary);
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+.custom-select-option.is-selected .option-check {
+  opacity: 1;
+}
+
+/* Apple Custom Non-Native Checkbox */
 .checkbox-label {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.65rem;
   min-height: 44px;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
   user-select: none;
+  border-radius: var(--radius-sm);
+  transition: opacity 0.15s ease;
+}
+
+.checkbox-label:hover {
+  opacity: 0.85;
 }
 
 .checkbox-input {
-  width: 18px;
-  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
   margin: 0;
-  accent-color: var(--accent-primary);
+  background-color: var(--color-surface-pearl);
+  border: 1.5px solid var(--color-hairline);
+  border-radius: 6px;
   cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+}
+
+.checkbox-input:hover:not(:disabled):not(:checked) {
+  border-color: var(--color-primary);
+  background-color: var(--color-canvas);
+}
+
+.checkbox-label:hover .checkbox-input:not(:disabled):not(:checked) {
+  border-color: var(--color-primary);
+}
+
+.checkbox-input:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.checkbox-input:focus-visible {
+  outline: none;
+  border-color: var(--color-primary-focus);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.25);
+}
+
+.checkbox-input:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: 13px 13px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.checkbox-input:checked:hover:not(:disabled),
+.checkbox-label:hover .checkbox-input:checked:not(:disabled) {
+  background-color: var(--color-primary-focus);
+  border-color: var(--color-primary-focus);
+}
+
+.checkbox-input:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  border-color: var(--color-hairline);
+  background-color: transparent;
 }
 
 .checkbox-text {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
 }
 
 /* Custom PPh Input */
 .custom-rate-box {
   display: inline-flex;
   align-items: center;
-  background-color: var(--bg-surface);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-pearl);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md);
   min-height: 44px;
-  padding: 0 0.65rem;
+  padding: 0 0.85rem;
   width: 130px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.custom-rate-box:focus-within {
+  border-color: var(--color-primary-focus);
+  background-color: var(--color-canvas);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
 }
 
 .custom-rate-box[hidden] {
@@ -341,9 +807,10 @@ select:focus-visible {
   width: 100%;
   border: none;
   background: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 0.9375rem;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
   font-weight: 600;
   padding: 0.4rem 0;
 }
@@ -353,17 +820,21 @@ select:focus-visible {
 }
 
 .percent-suffix {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--color-muted);
   margin-left: 0.25rem;
+  font-size: 14px;
 }
 
-/* Ledger Toolbar & Salin Button */
+/* ==========================================================================
+   Ledger Section Toolbar & Action Buttons (Apple Pill CTAs)
+   ========================================================================== */
+
 .ledger-section {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1.25rem;
 }
 
 .ledger-toolbar {
@@ -371,23 +842,24 @@ select:focus-visible {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .status-banner {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  flex: 1 1 260px;
+  gap: 0.35rem;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--color-muted);
+  flex: 1 1 auto;
 }
 
 .status-indicator {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background-color: var(--accent-primary);
+  background-color: var(--color-primary);
   flex-shrink: 0;
 }
 
@@ -398,60 +870,81 @@ select:focus-visible {
   margin-left: auto;
 }
 
+/* Base Apple Button Actions */
 .btn-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  min-height: 44px;
-  min-width: 104px;
-  padding: 0.5rem 1rem;
-  background-color: var(--bg-surface);
-  color: var(--text-primary);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-offset);
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0 1.25rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
-}
-
-.btn-action:hover {
-  background-color: var(--bg-row-highlight);
+  text-decoration: none;
+  transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  user-select: none;
 }
 
 .btn-action:active {
-  transform: translate(2px, 2px);
-  box-shadow: var(--shadow-offset-active);
+  transform: scale(0.95); /* Apple standard button press micro-interaction */
 }
 
+/* Cetak Invoice Button: Apple Secondary Pill */
 .btn-print {
-  background-color: var(--bg-surface);
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.btn-print:hover {
+  background-color: rgba(0, 102, 204, 0.06);
+}
+
+/* Salin Button: Apple Signature Primary Blue Pill (button-primary) */
+.btn-copy {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.btn-copy:hover {
+  background-color: var(--color-primary-focus);
+  border-color: var(--color-primary-focus);
+}
+
+.btn-copy:active {
+  background-color: var(--color-primary-active);
 }
 
 .btn-copy.copied {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
+  background-color: #34c759; /* Apple System Green feedback */
+  border-color: #34c759;
+  color: #ffffff;
 }
 
-/* Error Banner (R-27) */
+/* Error Banner */
 .error-banner {
-  padding: 0.75rem 1rem;
-  background-color: var(--bg-error);
-  border: 1.5px solid var(--border-error);
-  border-radius: var(--radius-sm);
-  color: var(--accent-deduction);
-  font-size: 0.875rem;
+  padding: 0.85rem 1.25rem;
+  background-color: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-md);
+  color: var(--color-deduction);
+  font-size: 14px;
+  line-height: 1.4;
 }
 
-/* 5-Row Interactive Ledger Table */
+/* ==========================================================================
+   Apple 5-Row Bidirectional Ledger Table
+   ========================================================================== */
+
 .ledger-table {
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background-color: var(--bg-surface);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-canvas);
   overflow: hidden;
 }
 
@@ -459,30 +952,40 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.625rem 1rem;
-  border-bottom: 1px solid var(--border-subtle);
-  background-color: var(--bg-surface);
-  transition: background-color 0.12s ease;
+  gap: 1.25rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-hairline-subtle);
+  background-color: var(--color-canvas);
+  transition: background-color 0.15s ease;
 }
 
 .ledger-row:last-child {
   border-bottom: none;
 }
 
-.ledger-row.row-highlight {
-  background-color: var(--bg-row-highlight);
+.ledger-row:hover {
+  background-color: var(--color-surface-pearl);
 }
 
+/* Highlight Rows: Total & Vendor receive subtle pearl backing */
+.ledger-row.row-highlight {
+  background-color: rgba(0, 0, 0, 0.015);
+}
+
+[data-theme="dark"] .ledger-row.row-highlight {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Active Calculation Anchor Row: Apple blue soft tint */
 .ledger-row.is-source {
-  background-color: var(--bg-row-active);
+  background-color: var(--color-active-tint);
 }
 
 .ledger-cell-label {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.65rem;
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -490,52 +993,65 @@ select:focus-visible {
 .vendor-title-group {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.15rem;
 }
 
 .row-title {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  color: var(--color-ink);
   cursor: pointer;
 }
 
 .row-title-strong {
-  font-weight: 700;
-  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
 }
 
 .row-subhint {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
+  font-size: 12px;
+  color: var(--color-muted);
+  letter-spacing: -0.01em;
 }
 
 .rate-pill {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-muted);
+  font-weight: 400;
 }
 
+/* Apple Active Source Pill Badge */
 .active-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.125rem 0.45rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--accent-primary);
-  background-color: var(--bg-surface);
-  border: 1px solid var(--accent-primary);
-  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-pill);
 }
 
 .active-badge[hidden] {
   display: none;
 }
 
-/* Editable Value Cell inside Ledger Row */
+/* ==========================================================================
+   Editable Value Cell inside Ledger Row
+   ========================================================================== */
+
 .ledger-cell-value {
   flex: 0 0 auto;
-  width: min(100%, 260px);
+  width: min(100%, 280px);
 }
 
 .inline-currency-field {
@@ -543,39 +1059,40 @@ select:focus-visible {
   align-items: center;
   justify-content: flex-end;
   min-height: 44px;
-  padding: 0 0.65rem;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  padding: 0 0.85rem;
+  background-color: var(--color-surface-pearl);
+  border: 1px solid var(--color-hairline);
   border-radius: var(--radius-sm);
-  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .inline-currency-field:hover {
-  border-color: var(--border-strong);
+  border-color: var(--color-ink-muted-48);
 }
 
 .inline-currency-field:focus-within {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 1.5px var(--accent-primary);
+  border-color: var(--color-primary-focus);
+  background-color: var(--color-canvas);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
 }
 
 .row-prefix {
-  font-family: var(--font-mono);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  margin-right: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--color-muted);
+  margin-right: 0.45rem;
   white-space: nowrap;
   user-select: none;
 }
 
 .row-prefix-strong {
-  font-weight: 700;
-  color: var(--text-primary);
+  font-weight: 600;
+  color: var(--color-ink);
 }
 
 .deduction-prefix {
-  color: var(--accent-deduction);
+  color: var(--color-deduction);
   font-weight: 600;
 }
 
@@ -584,13 +1101,14 @@ select:focus-visible {
   min-width: 0;
   border: none;
   background: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
+  color: var(--color-ink);
+  font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
-  font-size: 0.95rem;
+  font-size: 17px;
   font-weight: 500;
+  letter-spacing: -0.015em;
   text-align: right;
-  padding: 0.4rem 0;
+  padding: 0.35rem 0;
 }
 
 .row-input:focus-visible {
@@ -598,78 +1116,359 @@ select:focus-visible {
 }
 
 .row-input-strong {
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.deduction-input {
-  color: var(--accent-deduction);
+  font-size: 18px;
   font-weight: 600;
 }
 
-/* Tablet State (600px - 860px) */
+.deduction-input {
+  color: var(--color-deduction);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Apple Editorial Footer
+   ========================================================================== */
+
+.apple-footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-hairline);
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.footer-disclaimer {
+  margin: 0 0 1rem 0;
+  color: var(--color-ink-muted-48);
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.footer-copyright {
+  margin: 0;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-link {
+  color: var(--color-ink-muted-80);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-link:hover {
+  color: var(--color-primary);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints (Apple Standards)
+   ========================================================================== */
+
 @media (min-width: 600px) and (max-width: 860px) {
   .ledger-cell-value {
-    width: 230px;
+    width: 240px;
   }
 }
 
-/* Mobile Reflow State (< 600px) - Guarantees zero collision and full-width thumb targets */
 @media (max-width: 599px) {
+  .subnav-container {
+    height: 48px;
+    padding: 0 1rem;
+  }
+
+  .subnav-category {
+    display: none;
+  }
+
+  .subnav-title {
+    font-size: 15px;
+  }
+
+  .btn-apple-pill {
+    min-height: 28px;
+    padding: 3px 10px;
+    font-size: 11px;
+  }
+
+  .page-shell {
+    padding: 1.25rem 0.875rem 3.5rem;
+  }
+
   .top-bar {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
   }
 
-  .top-actions {
-    display: flex;
-    justify-content: flex-end;
+  .app-title {
+    font-size: clamp(1.65rem, 7vw, 2.1rem);
+    line-height: 1.12;
+    margin-bottom: 0.35rem;
+    letter-spacing: -0.02em;
   }
 
+  .app-subtitle {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  .calculator-main {
+    gap: 0.85rem;
+  }
+
+  .controls-section {
+    padding: 1rem 0.875rem;
+    gap: 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .ledger-section {
+    padding: 0.85rem 0.875rem 1rem;
+    gap: 0.55rem;
+    border-radius: var(--radius-md);
+  }
+
+  .field-group {
+    gap: 0.45rem;
+  }
+
+  .nominal-input-wrapper {
+    min-height: 52px;
+  }
+
+  .currency-prefix {
+    font-size: 1.1rem;
+    padding: 0 0.4rem 0 0.85rem;
+  }
+
+  .nominal-input {
+    font-size: 1.35rem;
+  }
+
+  .btn-clear {
+    min-width: 58px;
+    min-height: 38px;
+    padding: 0 0.75rem;
+    font-size: 12px;
+  }
+
+  .tax-options-grid {
+    gap: 1.125rem;
+    padding-top: 0.25rem;
+  }
+
+  .ppn-controls-row {
+    gap: 0.65rem;
+  }
+
+  .ppn-select-wrap,
   .pph-select-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .custom-select-trigger {
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
+  }
+
+  .custom-select-label {
+    min-width: 0;
+    max-width: 100%;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .custom-select-menu {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .field-select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    font-size: 14px;
+    padding: 0.55rem 2rem 0.55rem 0.85rem;
+  }
+
+  .checkbox-label {
+    width: 100%;
+    min-height: 42px;
+    padding: 0.35rem 0.25rem;
+    gap: 0.55rem;
+  }
+
+  .checkbox-text {
+    font-size: 13.5px;
+    line-height: 1.35;
   }
 
   .custom-rate-box {
     width: 100%;
+    margin-top: 0.25rem;
   }
 
   .ledger-toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.45rem;
+  }
+
+  .status-banner {
+    font-size: 12px;
+    line-height: 1.35;
+    gap: 0.35rem;
+    padding: 0;
+    margin: 0;
   }
 
   .toolbar-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
     width: 100%;
-    flex-direction: column;
   }
 
   .btn-action {
     width: 100%;
+    min-height: 42px;
+    padding: 0 0.75rem;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  .ledger-table {
+    border-radius: var(--radius-md);
   }
 
   .ledger-row {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.45rem;
-    padding: 0.75rem;
+    gap: 0.4rem;
+    padding: 0.75rem 0.85rem;
   }
 
   .ledger-cell-label {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 0.35rem;
+  }
+
+  .row-title {
+    font-size: 14.5px;
+  }
+
+  .row-title-strong {
+    font-size: 15.5px;
+  }
+
+  .row-subhint {
+    font-size: 11px;
+  }
+
+  .rate-pill {
+    font-size: 12px;
+  }
+
+  .active-badge {
+    padding: 2px 7px;
+    font-size: 10.5px;
   }
 
   .ledger-cell-value {
     width: 100%;
   }
+
+  .inline-currency-field {
+    min-height: 42px;
+    padding: 0 0.75rem;
+  }
+
+  .row-prefix {
+    font-size: 14px;
+    margin-right: 0.35rem;
+  }
+
+  .row-input {
+    font-size: 16px;
+    padding: 0.25rem 0;
+  }
+
+  .row-input-strong {
+    font-size: 17px;
+  }
+
+  .apple-footer {
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .footer-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .footer-links {
+    gap: 1rem;
+  }
 }
 
+@media (max-width: 374px) {
+  .page-shell {
+    padding: 1rem 0.65rem 3rem;
+  }
+
+  .controls-section,
+  .ledger-section {
+    padding: 1rem 0.75rem;
+  }
+
+  .toolbar-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-action {
+    font-size: 12px;
+  }
+
+  .nominal-input {
+    font-size: 1.2rem;
+  }
+}
 
 .ledger-row[hidden] {
   display: none;
 }
 
-/* Invoice Print Container */
+/* ==========================================================================
+   Invoice Print Layout (Clean Official Invoice)
+   ========================================================================== */
+
 .invoice-print-container {
   display: none;
 }
@@ -680,8 +1479,10 @@ select:focus-visible {
     color: #000000 !important;
   }
 
+  .apple-subnav,
   .page-shell > header,
-  .calculator-main {
+  .calculator-main,
+  .apple-footer {
     display: none !important;
   }
 
@@ -690,7 +1491,7 @@ select:focus-visible {
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     color: #000000;
   }
 
@@ -706,7 +1507,7 @@ select:focus-visible {
   .inv-title {
     margin: 0 0 0.25rem 0;
     font-size: 1.75rem;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: -0.02em;
   }
 
@@ -818,17 +1619,6 @@ select:focus-visible {
     background-color: #f5f5f5 !important;
   }
 
-  .inv-summary-table .inv-deduct-row td {
-    color: #880000 !important;
-  }
-
-  .inv-summary-table .inv-net-row td {
-    border-top: 2px solid #000000;
-    border-bottom: 2px solid #000000;
-    font-size: 0.95rem;
-    background-color: #f0f0f0 !important;
-  }
-
   .inv-signatures {
     display: flex;
     justify-content: space-between;
@@ -852,4 +1642,3 @@ select:focus-visible {
     font-weight: 600;
   }
 }
-

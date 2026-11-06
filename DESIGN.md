@@ -1,35 +1,47 @@
-# Design Direction: Kalkulator Pajak Invoice (PPN & PPh)
+# Design Direction: Kalkulator Pajak Invoice (Apple Design System)
 
-## Design Read
-Reading this as: Interactive financial utility (Indonesian PPN & PPh invoice calculator) for finance teams, vendors, and freelancers, in a warm editorial ledger style inspired by the user's reference screenshot, dial `ENERGY 1 / RHYTHM 2 / MOTION 1`.
+## Overview & Philosophy
+Applying Apple's clean, photography-first and content-centric design system to the Indonesian Tax Invoice Calculator (PPN & PPh). UI chrome recedes so the numbers and tax relationships speak directly. 
 
-## Dials
-- **ENERGY: 1 (Calm)**: High-clarity accounting ledger aesthetic where numbers, input boundaries, and tax relationships take center stage without decorative noise.
-- **RHYTHM: 2 (Balanced)**: Two distinct structural zones (top parameter controls vs. bottom interactive 5-row financial ledger) with deliberate typographic weight differentiation on key summary rows (`Total invoice` and `Diterima vendor`).
-- **MOTION: 1 (Hover & Focus States Only)**: Instantaneous numeric recalculation on keystroke with crisp focus rings and tactile button press offset; zero decorative loops.
+No decorative gradients, no heavy drop shadows on UI cards or buttons. Elevation is achieved through subtle surface contrast (pure white `#FFFFFF` cards on parchment `#F5F5F7` background), whisper-soft 1px hairlines (`#E0E0E0`), frosted-glass headers (`saturate(180%) blur(20px)`), and a single brand interactive accent color: Apple Action Blue (`#0066CC`).
 
-## Color Palette (R-29: 2 Core + 1 Accent)
+## Color System
 
-### Light Mode (Default - Warm Paper Ledger)
-- **Background Primary (`#FAF7F2`)**: Warm archival paper tone matching the reference screenshot to reduce eye strain during invoice reconciliation.
-- **Surface / Ledger Cell (`#FFFFFF` & `#F3EFE6`)**: Crisp white for interactive fields and warm stone (`#F3EFE6`) for highlighting the active calculation anchor row.
-- **Ink & Structural Border (`#18181B` & `#52525B`)**: Deep charcoal (`16.58:1` on paper) for primary text and crisp `1.5px` ledger borders; muted zinc (`7.23:1` on paper) for supporting labels.
-- **Deliberate Accent (`#0F766E`)**: Deep fiscal teal (`5.47:1` on white) used exclusively to indicate the active source row (`Acuan`) and keyboard `:focus-visible` indicator. Semantic deduction text uses deep crimson (`#B91C1C`, `6.47:1` on white) paired with an explicit minus sign (`- Rp`).
+### Light Mode (Signature Apple Light Canvas)
+- **Canvas / Background (`#F5F5F7`)**: Apple parchment off-white page background.
+- **Surface / Card (`#FFFFFF`)**: Pure white utility cards with subtle 1px hairline (`#E0E0E0`).
+- **Surface Pearl (`#FAFAFC`)**: Near-white subtle row hover and secondary capsule fill.
+- **Active Source Highlight (`#F0F6FF`)**: Whisper of Apple blue tint for the active recalculation anchor row.
+- **Ink Primary (`#1D1D1F`)**: Signature Apple near-black ink for headlines and primary numbers.
+- **Ink Secondary / Muted (`#86868B`)**: SF Pro muted label tone for secondary captions and hints.
+- **Action Blue (`#0066CC`)**: The single interactive accent for primary buttons, active badges, and links.
+- **Focus Blue (`#0071E3`)**: Keyboard focus outline and active input borders.
+- **Deduction Accent (`#D70015` / `#B91C1C`)**: Apple System Red reserved strictly for negative deductions (`- Rp`).
 
-### Dark Mode (Carbon Ledger)
-- **Background Primary (`#121316`)**: Deep carbon surface for low-light financial work.
-- **Surface / Ledger Cell (`#1A1C20` & `#22252A`)**: Elevated slate surfaces for inputs and active row states.
-- **Chalk & Border (`#F4F4F5`, `#A1A1AA`, border `#71717A`)**: High-contrast chalk text (`16.90:1`), muted silver labels (`7.25:1`), and `3.53:1` structural borders.
-- **Deliberate Accent (`#2DD4BF`)**: Crisp teal (`9.17:1` on `#1A1C20`) for active source indicators and focus rings; `#F87171` (`6.17:1`) for `- Rp` deductions.
+### Dark Mode (Apple Pro Canvas)
+- **Canvas / Background (`#000000`)**: Deep void black backdrop.
+- **Surface / Card (`#1D1D1F`)**: Apple space gray utility cards.
+- **Surface Tile / Row (`#272729` & `#2A2A2C`)**: Layered dark tiles for inputs and table rows.
+- **Ink Primary (`#F5F5F7`)**: Crisp near-white text on dark.
+- **Ink Secondary (`#86868B`)**: Balanced silver captions.
+- **Action Blue On Dark (`#2997FF`)**: Apple Sky Link Blue for high legibility on dark surfaces.
+- **Deduction Accent (`#FF453A`)**: Apple dark mode System Red for deductions.
 
-## Typography & Hierarchy (R-06, R-31)
-- **UI & Labels**: System humanist sans-serif (`Plus Jakarta Sans`, `-apple-system`, `BlinkMacSystemFont`, `'Segoe UI'`, sans-serif) for fast label scanning in Indonesian.
-- **Currency & Numeric Inputs**: Tabular monospace (`'JetBrains Mono'`, `'SFMono-Regular'`, `Consolas`, monospace with `font-variant-numeric: tabular-nums`) so digits align vertically across all 5 ledger rows and never jitter during live typing.
+## Typography
+- **Headlines & Titles**: `SF Pro Display`, `-apple-system`, `BlinkMacSystemFont`, `system-ui`, sans-serif.
+  - Weight: 600 (semi-bold, strictly avoiding over-bold 700 or generic 500).
+  - Letter spacing: Negative tracking (`-0.28px` to `-0.374px` / `-0.015em`) for the iconic Apple tight headline cadence.
+- **Body & Captions**: `SF Pro Text`, `-apple-system`, `BlinkMacSystemFont`, `system-ui`, sans-serif.
+  - Body size: 17px with 1.47 line height.
+- **Numeric & Currency**: Tabular figures via `'SF Pro Text', 'SFMono-Regular', Consolas, monospace` with `font-variant-numeric: tabular-nums` to guarantee place-value alignment across invoice rows.
 
-## One-Line Decision Log (R-31)
-- **Why this color palette?**: Matches the warm paper-and-ink ledger aesthetic of the user's reference image while meeting strict WCAG AA contrast in both light and dark modes.
-- **Why this layout?**: Mirrors the exact mental model of an Indonesian tax invoice: top parameters (`Nominal`, `Tarif PPN`, `Potongan PPh`) feeding a 5-row bidirectional ledger table.
-- **Why tabular monospace on numbers?**: Aligns Rupiah place values vertically across `DPP`, `PPN`, `Total invoice`, `PPh dipotong`, and `Diterima vendor` for instant visual verification.
-- **Why hard offset shadow on the Salin button?**: Preserves the tactile neo-brutalist ledger button signature from the user's reference screenshot (`2px 2px 0` solid border offset).
-- **Why inline editable inputs inside every table row?**: Fulfills the core requirement that editing any component (such as `Diterima vendor` for gross-up or `Total invoice`) immediately reverse-calculates all other rows in place.
+## Shapes & Geometry
+- **Primary Buttons (`button-primary`)**: Full pill shape (`border-radius: 9999px`), `#0066CC` background, white text, 44px min touch target, micro-interaction press state `transform: scale(0.95)`.
+- **Secondary Actions (`button-secondary-pill`, `button-dark-utility`)**: Capsule/pill shape, clean hairlines, subtle hover.
+- **Cards & Ledger Containers**: Rounded `18px` (`rounded.lg`), 1px solid hairline (`#E0E0E0`), zero box-shadow.
+- **Form Inputs**: Rounded `12px` or pill, crisp 1px border, seamless focus ring (`0 0 0 3px rgba(0, 113, 227, 0.2)`).
 
+## Accessibility & Interaction
+- **Focus Rings**: 2px solid `#0071E3` with 2px offset.
+- **Touch Targets**: Minimum 44 × 44px on all buttons, checkboxes, and interactive rows.
+- **Copy Feedback**: Smooth state transition on the Salin button with Apple checkmark icon and blue feedback.

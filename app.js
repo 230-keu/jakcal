@@ -76,10 +76,10 @@ const dom = {
 const state = {
   source: 'nominal',
   value: 1_000_000,
-  ppnRate: 0.11,
+  ppnRate: 0.12,
   pphRate: 0.02,
   includePpn: false,
-  useDppNilaiLain: false,
+  useDppNilaiLain: true,
   ppnDipungut: false,
   lastResult: null
 };
@@ -210,6 +210,9 @@ function render(activeInputEl = null, autoNotice = '') {
   } else {
     dom.inputPpnWapu.value = formatNumberId(result.ppn);
   }
+
+  if (typeof dom.selectPpn._updateCustomSelect === 'function') dom.selectPpn._updateCustomSelect();
+  if (typeof dom.selectPph._updateCustomSelect === 'function') dom.selectPph._updateCustomSelect();
 
   updateActiveBadges();
 
@@ -417,6 +420,144 @@ dom.themeToggle.addEventListener('click', () => {
   const current = document.documentElement.getAttribute('data-theme') || 'light';
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
+
+function initCustomSelect(selectEl) {
+  if (
+    typeof document === 'undefined' ||
+    typeof document.createElement !== 'function' ||
+    !selectEl ||
+    !selectEl.options ||
+    !selectEl.parentElement
+  ) {
+    return;
+  }
+
+  const wrapper = selectEl.parentElement;
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'custom-select-trigger';
+  trigger.setAttribute('aria-haspopup', 'listbox');
+  trigger.setAttribute('aria-expanded', 'false');
+
+  const labelSpan = document.createElement('span');
+  labelSpan.className = 'custom-select-label';
+
+  const iconSpan = document.createElement('span');
+  iconSpan.className = 'custom-select-icon';
+  iconSpan.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+  trigger.appendChild(labelSpan);
+  trigger.appendChild(iconSpan);
+
+  const menu = document.createElement('div');
+  menu.className = 'custom-select-menu';
+  menu.setAttribute('role', 'listbox');
+  menu.hidden = true;
+
+  function updateTriggerLabel() {
+    const activeOpt = selectEl.options[selectEl.selectedIndex];
+    labelSpan.textContent = activeOpt ? activeOpt.text : '';
+  }
+
+  function renderMenuOptions() {
+    menu.innerHTML = '';
+    for (let i = 0; i < selectEl.options.length; i++) {
+      const opt = selectEl.options[i];
+      const isSelected = opt.value === selectEl.value;
+
+      const item = document.createElement('div');
+      item.className = 'custom-select-option' + (isSelected ? ' is-selected' : '');
+      item.setAttribute('role', 'option');
+      item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+
+      const textSpan = document.createElement('span');
+      textSpan.className = 'option-text';
+      textSpan.textContent = opt.text;
+
+      const checkSpan = document.createElement('span');
+      checkSpan.className = 'option-check';
+      checkSpan.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+      item.appendChild(textSpan);
+      item.appendChild(checkSpan);
+
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (selectEl.value !== opt.value) {
+          selectEl.value = opt.value;
+          selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        closeMenu();
+      });
+
+      menu.appendChild(item);
+    }
+  }
+
+  function openMenu() {
+    renderMenuOptions();
+    if (typeof document.querySelectorAll === 'function') {
+      document.querySelectorAll('.custom-select-menu:not([hidden])').forEach((m) => {
+        m.hidden = true;
+        const prev = m.previousElementSibling;
+        if (prev && prev.setAttribute) {
+          prev.setAttribute('aria-expanded', 'false');
+          prev.classList.remove('is-open');
+        }
+      });
+    }
+    menu.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+    trigger.classList.add('is-open');
+  }
+
+  function closeMenu() {
+    menu.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.classList.remove('is-open');
+  }
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (menu.hidden) {
+      openMenu();
+    } else {
+      closeMenu();
+    }
+  });
+
+  selectEl.addEventListener('change', () => {
+    selectEl._updateCustomSelect = updateTriggerLabel;
+  updateTriggerLabel();
+    if (!menu.hidden) {
+      renderMenuOptions();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (typeof wrapper.contains === 'function' && !wrapper.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) {
+      closeMenu();
+      trigger.focus();
+    }
+  });
+
+  selectEl.classList.add('native-select-hidden');
+  wrapper.appendChild(trigger);
+  wrapper.appendChild(menu);
+
+  selectEl._updateCustomSelect = updateTriggerLabel;
+  updateTriggerLabel();
+}
+
+initCustomSelect(dom.selectPpn);
+initCustomSelect(dom.selectPph);
 
 render();
 })();
